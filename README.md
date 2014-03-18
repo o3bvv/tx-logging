@@ -1,4 +1,4 @@
-tx_logging
+tx logging
 ==========
 
 Extends Twisted log facilities.
