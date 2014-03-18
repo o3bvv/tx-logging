@@ -4,18 +4,21 @@ Extra log observers for Twisted.
 """
 import logging
 
-from twisted.python import log as tx_log
-from twisted.python import util as tx_util
+from twisted.python import log
+from twisted.python import util
 
 
-class LevelFileLogObserver(tx_log.FileLogObserver):
+class LevelFileLogObserver(log.FileLogObserver):
     """
     Log messages observer. Has internal logging level threshold. Adds log level
     to output messages. See 'twisted.python.log.FileLogObserver' for details.
     """
     def __init__(self, f, level=logging.INFO):
-        tx_log.FileLogObserver.__init__(self, f)
+        log.FileLogObserver.__init__(self, f)
         self.log_level = level
+
+    def __call__(self, eventDict):
+        self.emit(eventDict)
 
     def emit(self, eventDict):
         """
@@ -30,7 +33,7 @@ class LevelFileLogObserver(tx_log.FileLogObserver):
         if level < self.log_level:
             return
 
-        text = tx_log.textFromEventDict(eventDict)
+        text = log.textFromEventDict(eventDict)
         if text is None:
             return
 
@@ -40,8 +43,8 @@ class LevelFileLogObserver(tx_log.FileLogObserver):
             'system': eventDict['system'],
             'text': text.replace("\n", "\n\t")
         }
-        msg_str = tx_log._safeFormat(
+        msg_str = log._safeFormat(
             "%(level)8s:[%(system)s]: %(text)s\n", fmt_dict)
 
-        tx_util.untilConcludes(self.write, "{0} {1}".format(time_str, msg_str))
-        tx_util.untilConcludes(self.flush)
+        util.untilConcludes(self.write, "{0} {1}".format(time_str, msg_str))
+        util.untilConcludes(self.flush)

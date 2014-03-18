@@ -5,45 +5,20 @@ Test main functionality.
 import logging
 import unittest
 
-from twisted.python import log as tx_log
+from twisted.python import log
+
 from tx_logging import Manager
-
-
-class CollectingObserver(object):
-
-    def __init__(self, level=logging.INFO):
-        self.log = []
-        self.log_level = level
-
-    def __call__(self, eventDict):
-        if eventDict['isError']:
-            level = logging.ERROR
-        elif 'level' in eventDict:
-            level = eventDict['level']
-        else:
-            level = logging.INFO
-        if level < self.log_level:
-            return
-
-        text = tx_log.textFromEventDict(eventDict)
-        if text is None:
-            return
-
-        self.log.append({
-            'level': level,
-            'text': text,
-            'system': eventDict['system'],
-        })
+from tx_logging.tests.observers import CollectingObserver
 
 
 class LoggingTest(unittest.TestCase):
 
     def setUp(self):
-        self.LOG = Manager().get_logger(__name__)
+        self.LOG = Manager().getLogger(__name__)
 
     def _test_level(self, level, messages_number):
         observer = CollectingObserver(level)
-        tx_log.addObserver(observer)
+        log.addObserver(observer)
 
         self.LOG.debug('test debug')
         self.LOG.info('test info')
@@ -51,7 +26,7 @@ class LoggingTest(unittest.TestCase):
         self.LOG.error('test error')
         self.LOG.critical('test critical')
 
-        tx_log.removeObserver(observer)
+        log.removeObserver(observer)
         self.assertEqual(len(observer.log), messages_number)
 
         for entry in observer.log:

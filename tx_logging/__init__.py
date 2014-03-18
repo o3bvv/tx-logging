@@ -4,7 +4,7 @@ Logger extensions for Twisted.
 """
 import logging
 
-from twisted.python import log as tx_log
+from twisted.python import log
 
 
 class Logger(object):
@@ -49,7 +49,7 @@ class Logger(object):
         """
         Helper method for enlogging message with specisied log level.
         """
-        tx_log.msg(message, level=level, system=self.name)
+        log.msg(message, level=level, system=self.name)
 
 
 class Manager(object):
@@ -59,7 +59,7 @@ class Manager(object):
     def __init__(self):
         self.loggers = {}
 
-    def get_logger(self, name):
+    def getLogger(self, name):
         """
         Get or create new logger with specisied name.
         """
@@ -74,4 +74,4 @@ class Manager(object):
         return logger
 
 
-get_logger = Manager().get_logger
+getLogger = Manager().getLogger
