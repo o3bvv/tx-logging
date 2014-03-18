@@ -75,4 +75,3 @@ class Manager(object):
 
 
 get_logger = Manager().get_logger
-del Manager
